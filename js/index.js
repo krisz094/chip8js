@@ -15,22 +15,22 @@ var CTX = CANVAS.getContext("2d");
  * 
 */
 var DEFAULT_CHARS = {
-    0: ['0xF0', '0x90', '0x90', '0x90', '0xF0'],
-    1: [],
-    2: [],
-    3: [],
-    4: [],
-    5: [],
-    6: [],
-    7: [],
-    8: [],
-    9: [],
-    A: [],
-    B: [],
-    C: [],
-    D: [],
-    E: [],
-    F: [],
+    '0': ['0xF0', '0x90', '0x90', '0x90', '0xF0'],
+    '1': ['0x20', '0x60', '0x20', '0x20', '0x70'],
+    '2': ['0xF0', '0x10', '0xF0', '0x80', '0xF0'],
+    '3': ['0xF0', '0x10', '0xF0', '0x10', '0xF0'],
+    '4': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    '5': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    '6': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    '7': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    '8': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    '9': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    'A': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    'B': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    'C': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    'D': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    'E': ['0x0', '0x0', '0x0', '0x0', '0x0'],
+    'F': ['0x0', '0x0', '0x0', '0x0', '0x0'],
 };
 
 /** 
@@ -65,8 +65,17 @@ function putPixel(x, y, color) {
     CTX.fillRect(x * PIXEL_WIDTH, y * PIXEL_HEIGHT, PIXEL_WIDTH, PIXEL_HEIGHT);
 }
 
-function putCharacter(character, x, y) {
-
+function putCharacter(character, x, y, mode) {
+    var chararr = DEFAULT_CHARS[character].map(Hex2Bin);
+    chararr.forEach(function (charRow, rowIdx) {
+        //    console.log(charRow, rowIdx);
+        charRow.split('').forEach(function (charBin, binIdx) {
+            //      console.log(charBin, binIdx);
+            if (charBin == 1) {
+                putPixel(x + binIdx, y + rowIdx)
+            }
+        })
+    });
 }
 
 function setMemoryContent(address, content) {
@@ -87,5 +96,14 @@ function getMemoryContent(address) {
 }
 
 function Hex2Bin(hexnum) {
-    return parseInt(hexnum, 16).toString(2);
+    var hex = parseInt(hexnum, 16).toString(2);
+    if (hex.length < 8) {
+        var iter = 8 - hex.length;
+        for (var i = 0; i < iter; i++) {
+            hex = "0" + hex;
+        }
+    } else if (hex.length > 8) {
+        throw new Error('Too big number');
+    }
+    return hex;
 }
